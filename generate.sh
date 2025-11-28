@@ -17,9 +17,20 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
 PYTHON_SCRIPT="$SCRIPT_DIR/generate_text.py"
+REQUIREMENTS="$SCRIPT_DIR/requirements.txt"
 
-# Check for virtual environment
-if [ -d "$VENV_DIR" ]; then
+# Setup virtual environment with uv if not present
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Setting up virtual environment..."
+    if ! command -v uv &> /dev/null; then
+        echo "Error: uv not found. Install with: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        exit 1
+    fi
+    uv venv "$VENV_DIR"
+    source "$VENV_DIR/bin/activate"
+    echo "Installing dependencies..."
+    uv pip install -r "$REQUIREMENTS"
+else
     source "$VENV_DIR/bin/activate"
 fi
 
@@ -35,16 +46,82 @@ if [ ! -f "$PYTHON_SCRIPT" ]; then
     exit 1
 fi
 
-# Show help if no arguments
+# Interactive mode if no arguments
 if [ $# -eq 0 ]; then
     echo "Voice Clone Text Generator"
+    echo "=========================="
     echo ""
-    echo "Usage: $0 -d <duration_minutes> [options]"
+
+    # Duration
+    read -p "Total duration in minutes: " DURATION
+    if [ -z "$DURATION" ]; then
+        echo "Error: Duration is required"
+        exit 1
+    fi
+
+    # Style selection
     echo ""
-    echo "Required:"
-    echo "  -d, --duration      Target total duration in minutes"
+    echo "Available styles:"
+    echo "  1) conversational (default)"
+    echo "  2) narrative"
+    echo "  3) technical"
+    echo "  4) news_anchor"
+    echo "  5) storytelling"
+    echo "  6) educational"
+    echo "  7) podcast"
+    echo ""
+    read -p "Select style [1-7, default=1]: " STYLE_NUM
+
+    case "$STYLE_NUM" in
+        2) STYLE="narrative" ;;
+        3) STYLE="technical" ;;
+        4) STYLE="news_anchor" ;;
+        5) STYLE="storytelling" ;;
+        6) STYLE="educational" ;;
+        7) STYLE="podcast" ;;
+        *) STYLE="conversational" ;;
+    esac
+
+    # Chunks
+    echo ""
+    read -p "Number of chunks [default=1, single file]: " CHUNKS
+    if [ -z "$CHUNKS" ]; then
+        CHUNKS=1
+    fi
+
+    # Topic
+    echo ""
+    read -p "Topic focus [optional, press Enter to skip]: " TOPIC
+
+    # Build command
+    ARGS="-d $DURATION -s $STYLE"
+    if [ "$CHUNKS" -gt 1 ]; then
+        ARGS="$ARGS -c $CHUNKS"
+    fi
+    if [ -n "$TOPIC" ]; then
+        ARGS="$ARGS -t \"$TOPIC\""
+    fi
+
+    echo ""
+    echo "Generating ${DURATION} minutes of ${STYLE} content..."
+    [ "$CHUNKS" -gt 1 ] && echo "Split into $CHUNKS chunks"
+    [ -n "$TOPIC" ] && echo "Topic: $TOPIC"
+    echo ""
+
+    eval python3 "$PYTHON_SCRIPT" $ARGS
+    exit $?
+fi
+
+# Show help with -h or --help
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    echo "Voice Clone Text Generator"
+    echo ""
+    echo "Usage: $0 [options]"
+    echo ""
+    echo "Run without arguments for interactive mode."
     echo ""
     echo "Options:"
+    echo "  -d, --duration      Target total duration in minutes"
     echo "  -s, --style         Text style:"
     echo "                        conversational (default)"
     echo "                        narrative"
@@ -57,8 +134,10 @@ if [ $# -eq 0 ]; then
     echo "  --chunk-duration    Duration per chunk in minutes (alternative to -c)"
     echo "  -t, --topic         Topic hint for content generation"
     echo "  --wpm               Override WPM from config"
+    echo "  -h, --help          Show this help message"
     echo ""
     echo "Examples:"
+    echo "  $0                                    # Interactive mode"
     echo "  $0 -d 30                              # 30 minutes, single file"
     echo "  $0 -d 30 -s narrative                 # 30 min narrative style"
     echo "  $0 -d 30 -c 3                         # 30 min in 3 chunks"

@@ -1,20 +1,34 @@
 # Voice Training Script Generator
 
+![alt text](image.png)
+
 Generate reading scripts for voice cloning and TTS training data. Uses your measured words-per-minute (WPM) rate to create text that will take a specific duration to narrate.
+
+## Prerequisites
+
+- [uv](https://docs.astral.sh/uv/) - Fast Python package manager
+- Gemini API key from https://aistudio.google.com/apikey
+
+Install uv if not already installed:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ## Setup
 
 ```bash
-# Create and activate virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
-pip install google-genai pydub python-dotenv
-
 # Set up API key
 cp .env.example .env
 # Edit .env and add your Gemini API key
+```
+
+The virtual environment and dependencies are automatically installed when you first run `./generate.sh`.
+
+**Manual setup (optional):**
+```bash
+uv venv .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
 ```
 
 Get your Gemini API key at: https://aistudio.google.com/apikey
@@ -36,6 +50,18 @@ If you want accurate timing, first measure your speaking rate:
 
 ### 2. Generate Reading Scripts
 
+Simply run:
+```bash
+./generate.sh
+```
+
+The script will prompt you for:
+- Duration (in minutes)
+- Style (select from numbered list)
+- Number of chunks
+- Optional topic focus
+
+**Command-line mode** (for scripting):
 ```bash
 # Basic: 30 minutes of conversational text in a single file
 ./generate.sh -d 30
@@ -51,6 +77,9 @@ If you want accurate timing, first measure your speaking rate:
 
 # Add a topic focus
 ./generate.sh -d 60 -s technical -t "Python programming"
+
+# Show help
+./generate.sh --help
 ```
 
 ### Available Styles
@@ -96,8 +125,9 @@ Edit `config.json` to customize defaults:
 .
 ├── calculate_wpm.py    # WPM measurement tool
 ├── generate_text.py    # Text generation script
-├── generate.sh         # CLI wrapper
+├── generate.sh         # CLI wrapper (auto-installs venv)
 ├── config.json         # Configuration
+├── requirements.txt    # Python dependencies
 ├── wpm-measure/        # Place audio samples here for WPM calculation
 ├── user-context/       # WPM analysis results
 └── output/             # Generated scripts
