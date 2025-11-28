@@ -1,4 +1,4 @@
-# Voice Clone Data Generator
+# Voice Training Script Generator
 
 Generate reading scripts for voice cloning and TTS training data. Uses your measured words-per-minute (WPM) rate to create text that will take a specific duration to narrate.
 
