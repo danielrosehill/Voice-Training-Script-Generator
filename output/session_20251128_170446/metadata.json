@@ -1,0 +1,24 @@
+{
+  "generated_at": "2025-11-28T17:04:46.503035",
+  "style": "educational",
+  "target_duration_minutes": 2.0,
+  "wpm_used": 198,
+  "chunks": [
+    {
+      "file": "chunk_01.txt",
+      "target_word_count": 198,
+      "actual_word_count": 183,
+      "estimated_duration_minutes": 0.92
+    },
+    {
+      "file": "chunk_02.txt",
+      "target_word_count": 198,
+      "actual_word_count": 153,
+      "estimated_duration_minutes": 0.77
+    }
+  ],
+  "totals": {
+    "total_words": 336,
+    "estimated_total_duration_minutes": 1.7
+  }
+}

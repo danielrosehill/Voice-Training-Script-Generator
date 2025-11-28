@@ -1,0 +1,18 @@
+{
+  "generated_at": "2025-11-28T17:04:30.792782",
+  "style": "conversational",
+  "target_duration_minutes": 1.0,
+  "wpm_used": 198,
+  "chunks": [
+    {
+      "file": "script.txt",
+      "target_word_count": 198,
+      "actual_word_count": 171,
+      "estimated_duration_minutes": 0.86
+    }
+  ],
+  "totals": {
+    "total_words": 171,
+    "estimated_total_duration_minutes": 0.86
+  }
+}

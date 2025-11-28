@@ -1,0 +1,15 @@
+{
+  "wpm": 198,
+  "default_style": "conversational",
+  "available_styles": [
+    "conversational",
+    "narrative",
+    "technical",
+    "news_anchor",
+    "storytelling",
+    "educational",
+    "podcast"
+  ],
+  "default_chunk_duration_minutes": 10,
+  "output_directory": "output"
+}
